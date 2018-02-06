@@ -48,14 +48,28 @@ $(function(){
 		}
 		else
 		{
-			$('#user_name').next().hide();
-			error_name = false;
+			// $('#user_name').next().hide();
+			// error_name = false;
+
+			// ajax 提交用户名验证
+			srcf_check()
+			$.post('/user/check_name/',{'user_name':$('#user_name').val()},function (data) {
+				if(data.data){
+					$('#user_name').next().html('用户名已存在')
+					$('#user_name').next().show();
+					error_name = true;
+				}else {
+					// 用户名可以用  错误返回  False
+					$('#user_name').next().hide();
+					error_name = false;
+				}
+			})
 		}
 	}
 
 	function check_pwd(){
 		var len = $('#pwd').val().length;
-		if(len<8||len>20)
+		if(len<6||len>20)
 		{
 			$('#pwd').next().html('密码最少8位，最长20位')
 			$('#pwd').next().show();
@@ -105,26 +119,48 @@ $(function(){
 	}
 
 
-	$('#reg_form').submit(function() {
+	$('.reg_form').submit('click',function() {
 		check_user_name();
 		check_pwd();
 		check_cpwd();
 		check_email();
-
 		if(error_name == false && error_password == false && error_check_password == false && error_email == false && error_check == false)
 		{
+			$('#pwd').val(SHA2($('#pwd').val()))
 			return true;
+			//srcf_check()
+			// $.post(
+			// 	'/user/regist/',
+			// 	{
+			// 		'user_name':$('#user_name').val(),
+			// 		'pass_word':SHA2($('#pwd').val()),
+			// 		'email':$('#email').val()
+			// 	},
+			// 	function (data) {
+			// 		if (data.data=='ok'){
+			// 			alert('注册成功！')
+			// 		}
+             //    }
+			// )
 		}
 		else
 		{
+			//alert('请检查注册类容')
 			return false;
 		}
 
 	});
 
 
-
-
+    // 验证 csrf
+    function srcf_check() {
+		$.ajaxSetup({
+		  beforeSend: function(xhr, settings){
+			  var csrftoken = $.cookie('csrftoken');
+			  xhr.setRequestHeader("X-CSRFToken", csrftoken);
+		  }
+		});
+	}
 
 
 
