@@ -8,7 +8,7 @@ urlpatterns = [
     url(r'^register/$',views.register),
     url(r'^info/$',views.info),
 
-
+    url(r'^loging/$',views.loging),
     url(r'^check_name/$',views.check_name),
     url(r'^regist/$',views.regist),
 ]

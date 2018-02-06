@@ -15,6 +15,16 @@ def info(req):
     return render(req,'userInfo/user_center_info.html')
 
 
+def loging(req):
+    if req.POST.get('username'):
+        user_name = req.POST.get('username')
+        pass_word = req.POST.get('pwd')
+    mysql_user = UserInfo.objects.filter(user_name=user_name)
+    print(pass_word)
+    if mysql_user['pass_word']== pass_word:
+        return HttpResponse('OK')#HttpResponseRedirect('/user/info/')
+    else:
+        return HttpResponse('密码错误')
 
 
 def regist(req):
