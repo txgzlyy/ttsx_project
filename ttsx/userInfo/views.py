@@ -16,15 +16,21 @@ def info(req):
 
 
 def loging(req):
+    user_name = ''
+    pass_word = ''
     if req.POST.get('username'):
         user_name = req.POST.get('username')
         pass_word = req.POST.get('pwd')
-    mysql_user = UserInfo.objects.filter(user_name=user_name)
-    print(pass_word)
-    if mysql_user['pass_word']== pass_word:
-        return HttpResponse('OK')#HttpResponseRedirect('/user/info/')
-    else:
-        return HttpResponse('密码错误')
+    try:
+        mysql_user = UserInfo.objects.get(user_name=user_name)
+        #print(mysql_user.pass_word)
+        if mysql_user.pass_word == pass_word:
+            return HttpResponseRedirect('/user/info/')#HttpResponse('OK')
+        else:
+            return HttpResponse('密码错误')
+    except Exception as e:
+        return HttpResponse(e)
+    #return HttpResponse('OK')
 
 
 def regist(req):
@@ -42,9 +48,11 @@ def regist(req):
 def check_name(req):
     res = False
     user_name = req.POST.get('user_name')
-    mysql_user_name = UserInfo.objects.filter(user_name=user_name)
-    if mysql_user_name:
-        res = True
-
-    return JsonResponse({'data':res})
+    try:
+        mysql_user_name = UserInfo.objects.filter(user_name=user_name)
+        if mysql_user_name:
+            res = True
+        return JsonResponse({'data':res})
+    except Exception as e:
+        return HttpResponse(e)
 

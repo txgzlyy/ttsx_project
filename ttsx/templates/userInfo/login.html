@@ -5,6 +5,7 @@
 	<title>天天生鲜-登录</title>
 	<link rel="stylesheet" type="text/css" href="/static/css/reset.css">
 	<link rel="stylesheet" type="text/css" href="/static/css/main.css">
+	<script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
 	<script type="text/javascript" src="/static/js/sha1.js"></script>
 </head>
 <body>
@@ -45,6 +46,7 @@
     <script type="text/javascript">
 		$('.pass_input').blur(function () {
 			$('.pass_input').val(SHA2($('.pass_input').val()))
+			console.log($('.pass_input').val())
         })
 
 	</script>
