@@ -128,20 +128,6 @@ $(function(){
 		{
 			$('#pwd').val(SHA2($('#pwd').val()))
 			return true;
-			//srcf_check()
-			// $.post(
-			// 	'/user/regist/',
-			// 	{
-			// 		'user_name':$('#user_name').val(),
-			// 		'pass_word':SHA2($('#pwd').val()),
-			// 		'email':$('#email').val()
-			// 	},
-			// 	function (data) {
-			// 		if (data.data=='ok'){
-			// 			alert('注册成功！')
-			// 		}
-             //    }
-			// )
 		}
 		else
 		{
