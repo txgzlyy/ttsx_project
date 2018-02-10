@@ -16,7 +16,7 @@
 				</div>
 				<h3 class="common_title2">编辑地址</h3>
 				<div class="site_con">
-					<form method="post" action="/user/siteing/">
+					<form method="post" action="/user/siteing/" class="site_form">
 						{%csrf_token%}
 						<div class="form_group">
 							<label>收件人：</label>
@@ -64,7 +64,7 @@
 			    check_tel();
 			});
 
-			$('.login_form1').submit(function () {
+			$('.site_form').submit(function () {
 				check_user_name();
 				check_area();
 				check_yb();
@@ -82,7 +82,7 @@
 			}
 
 			function check_area(){
-				var len = $('.check_area').val().length;
+				var len = $('.check_area').text().length;
 				if(len>100){
 
 				}else {

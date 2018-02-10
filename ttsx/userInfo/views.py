@@ -87,7 +87,12 @@ def loging(req):
 
 def info(req):
     name = user_name = req.session.get('uname')
-    context = {'title':'用户中心',"active":"info",'user':name}
+    user = UserInfo.objects.get(user_name=name)
+    user_info = {}
+    user_info['name'] = user.shou_name
+    user_info['tel'] = user.tel_num
+    user_info['address'] = user.address
+    context = {'title':'用户中心',"active":"info",'user':name,'user_info':user_info}
     return render(req,'userInfo/user_center_info.html',context)
 
 def order(req):
