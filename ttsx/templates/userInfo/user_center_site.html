@@ -16,28 +16,99 @@
 				</div>
 				<h3 class="common_title2">编辑地址</h3>
 				<div class="site_con">
-					<form>
+					<form method="post" action="/user/siteing/">
+						{%csrf_token%}
 						<div class="form_group">
 							<label>收件人：</label>
-							<input type="text" name="">
+							<input type="text" name="shou_name" id="shouname">
 						</div>
 						<div class="form_group form_group2">
 							<label>详细地址：</label>
-							<textarea class="site_area"></textarea>
+							<textarea class="site_area" name="address"></textarea>
 						</div>
 						<div class="form_group">
 							<label>邮编：</label>
-							<input type="text" name="">
+							<input type="text" name="you_bian" id="yb">
 						</div>
 						<div class="form_group">
 							<label>手机：</label>
-							<input type="text" name="">
+							<input type="text" name="tel_num" id="tel">
 						</div>
 
-						<input type="submit" name="" value="提交" class="info_submit">
+						<input type="submit" value="提交" class="info_submit">
 					</form>
 				</div>
 		</div>
 	</div>
+
+	<script type="text/javascript">
+		$(function () {
+		    var name_ok = false
+			var area_ok = false
+			var yb_ok = false
+			var tel_ok = false
+
+		    $('#shouname').blur(function () {
+				check_user_name()
+            });
+
+			$('.site_area').blur(function () {
+			    check_area();
+			});
+
+			$('#yb').blur(function () {
+			    check_yb();
+			});
+
+			$('#tel').blur(function () {
+			    check_tel();
+			});
+
+			$('.login_form1').submit(function () {
+				check_user_name();
+				check_area();
+				check_yb();
+				check_tel();
+				return name_ok&&area_ok&&yb_ok&&tel_ok
+            });
+
+			function check_user_name(){
+				var len = $('#shouname').val().length;
+				if(len<1||len>20){
+
+				}else {
+				    name_ok = true;
+				}
+			}
+
+			function check_area(){
+				var len = $('.check_area').val().length;
+				if(len>100){
+
+				}else {
+				    area_ok = true;
+				}
+			}
+
+			function check_yb(){
+				var len = $('#yb').val().length;
+				if(len>10){
+
+				}else {
+				    yb_ok = true;
+				}
+			}
+
+			function check_tel(){
+				var len = $('#tel').val().length;
+				if(len!=11){
+
+				}else {
+				    tel_ok = true;
+				}
+			}
+
+        })
+	</script>
 
     {%endblock body%}

@@ -1,5 +1,5 @@
 #coding=utf-8
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import HttpResponse,JsonResponse,HttpResponseRedirect
 from models import *
 from hashlib import sha1
@@ -33,23 +33,47 @@ def check_name(req):
         return HttpResponse(e)
 
 def login(req):
-    return render(req,'userInfo/login.html',{'title':'登录'})
+    if req.session.get('uname'):
+        user_name = req.session.get('uname')
+        pass_word = req.session.get('upwd')
+
+        m = sha1()
+        m.update(pass_word)
+        pass_word_m = m.hexdigest()
+
+        mysql_user = UserInfo.objects.get(user_name=user_name)
+        if mysql_user.pass_word == pass_word_m:
+            req.session['uname'] = user_name
+            req.session['upwd'] = pass_word
+            return HttpResponseRedirect('/user/info/')
+        else:
+            return render(req, 'userInfo/login.html', {'title': '登录'})
+    else:
+        return render(req, 'userInfo/login.html', {'title': '登录'})
+
 
 def loging(req):
     user_name = ''
     pass_word = ''
+    remeber = False
     if req.POST.get('username'):
         user_name = req.POST.get('username')
         pass_word = req.POST.get('pwd')
+        remeber = req.POST.get('remeber')
     context = {'title':'登录','user_name':user_name,'pass_word':pass_word}
 
+    print(remeber)
     m = sha1()
     m.update(pass_word)
-    pass_word = m.hexdigest()
+    pass_word_m = m.hexdigest()
     try:
         mysql_user = UserInfo.objects.get(user_name=user_name)
         #print(mysql_user.pass_word)
-        if mysql_user.pass_word == pass_word:
+        if mysql_user.pass_word == pass_word_m:
+            # 登录成功 如果用户选择记住密码 记录存入sessions
+            if remeber=='1':
+                req.session['uname'] = user_name
+                req.session['upwd'] = pass_word
             return HttpResponseRedirect('/user/info/')#HttpResponse('OK')
         else:
             context['upwd_err'] = 1
@@ -62,7 +86,33 @@ def loging(req):
 
 
 def info(req):
-    return render(req,'userInfo/user_center_info.html',{'title':'用户中心'})
+    name = user_name = req.session.get('uname')
+    context = {'title':'用户中心',"active":"info",'user':name}
+    return render(req,'userInfo/user_center_info.html',context)
+
+def order(req):
+    name = user_name = req.session.get('uname')
+    context = {'title': '用户中心', "active": "order", 'user': name}
+    return render(req,'userInfo/user_center_order.html',context)
+
+def site(req):
+    name = req.session.get('uname')
+    context = {'title': '用户中心', "active": "address", 'user': name}
+    return render(req,'userInfo/user_center_site.html',context)
+
+def siteing(req):
+    post = req.POST
+    name = req.session.get('uname')
+    try:
+        user = UserInfo.objects.get(user_name=name)
+        user.shou_name = post.get('shou_name')
+        user.address = post.get('address')
+        user.you_bian = post.get('you_bian')
+        user.tel_num = post.get('tel_num')
+        user.save()
+        return redirect('/user/info/',{"res":True})
+    except Exception as e:
+        return HttpResponse(e)
 
 
 

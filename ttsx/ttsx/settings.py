@@ -1,3 +1,4 @@
+#coding=utf-8
 """
 Django settings for ttsx project.
 
@@ -108,3 +109,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
+
+#sessions  混合存储
+SESSION_ENGINE='django.contrib.sessions.backends.cached_db'
