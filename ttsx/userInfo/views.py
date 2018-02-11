@@ -108,7 +108,7 @@ def siteing(req):
     user.you_bian = post.get('you_bian')
     user.tel_num = post.get('tel_num')
     user.save()
-    return redirect('/user/',{"res":True})
+    return redirect('/user/site/')
 
 
 
