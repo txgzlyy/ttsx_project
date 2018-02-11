@@ -10,7 +10,7 @@ urlpatterns = [
     url(r'^check_name/$',views.check_name),
     url(r'^regist/$',views.regist),
 
-    url(r'^info/$',views.info),
+    url(r'^$',views.info),
     url(r'^order/$',views.order),
     url(r'^site/$',views.site),
     url(r'^siteing/$',views.siteing),

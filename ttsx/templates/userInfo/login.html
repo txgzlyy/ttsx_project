@@ -26,7 +26,7 @@
 						<input type="password" name="pwd" value="{{pass_word}}" class="pass_input" placeholder="请输入密码">
 						<div class="pwd_error">输入错误</div>
 						<div class="more_input clearfix">
-							<input type="checkbox" name="remeber" id="aa" value="0">
+							<input type="checkbox" name="remeber" id="aa" value="1">
 							<label>记住用户名</label>
 							<a href="#">忘记密码</a>
 						</div>
@@ -51,15 +51,6 @@
 			    check_pwd();
 				//$(this).val(SHA2($(this).val()));
 			});
-
-			$('#aa').click(function () {
-				if($(this).is(':checked')){
-				    $(this).val('1')
-				}else {
-				    $(this).val('0')
-				}
-            });
-
 
 			$('.login_form1').submit(function () {
 				check_user_name();
