@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'tinymce',
     'userInfo',
     'ttsx_goods',
 )
@@ -110,6 +111,14 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
-
 #sessions  混合存储
 SESSION_ENGINE='django.contrib.sessions.backends.cached_db'
+
+MEDIA_ROOT = os.path.join(BASE_DIR,'static/')
+
+
+TINYMCE_DEFAULT_CONFIG = {
+    'theme': 'advanced',
+    'width': 600,
+    'height': 400,
+}
