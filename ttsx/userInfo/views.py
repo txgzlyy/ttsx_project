@@ -52,7 +52,8 @@ def loging(req):
         if mysql_user.pass_word == pass_word_m:
             # 登录成功  记录存入sessions
             req.session['uid'] = mysql_user.id
-            #如果用户选择记住密码 写入cookie
+            req.session['uname'] = user_name
+            #如果用户选择记住用户名 写入cookie
             #print(req.session.get('path'))
             if req.session.get('path'):
                 response = redirect(req.session.get('path'))

@@ -2,9 +2,9 @@
 		<div class="header">
 			<div class="welcome fl">欢迎来到天天生鲜!</div>
 			<div class="fr">
-				{%if user%}
+				{%if request.session.uid%}
 				<div class="login_info fl">
-					欢迎您：<em>{{user.user_name}}</em>
+					欢迎您：<em>{{request.session.uname}}</em>
 				</div>
 				<div class="login_btn fl">
 					<span>|</span>
