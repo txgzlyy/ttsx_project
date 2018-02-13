@@ -24,7 +24,7 @@ def type_list(req):
     goods = []
     goods_info = []
     active = 'id'
-    if req.GET:
+    if req.GET.get('id'):
         id = req.GET.get('id')
         goods = GoodsType.objects.get(pk=id)
         if req.GET.get('gpric'):
@@ -40,3 +40,15 @@ def type_list(req):
                'goods_info':goods_info,'ngoods':goods_info[:2],'active':active
                }
     return render(req,'goods/list.html',context)
+
+
+def detail(req):
+    if req.GET.get('id'):
+        id = req.GET.get('id')
+        goods = GoodsInfo.objects.get(pk=id)
+        # 推荐商品  找出该商品所在的类型 再去该类型的另外两个商品
+        tgoods = GoodsType.objects.get(pk=goods.gtype.id).goodsinfo_set.order_by('-id')[:2]
+        context = {'title': '商品详情', 'car_order': 'ok', 'user': '', 'goods': goods,"tgoods":tgoods}
+        return render(req, 'goods/detail.html', context)
+    else:
+        return render(req, 'goods/list.html')

@@ -51,18 +51,18 @@
 			<div class="subtitle fl">
 				<span>|</span>
 				{%for cgoods in type.clist%}
-				<a href="/goods/detail/?id={{cgoods.id}}">{{cgoods.gname}}</a>
+				<a href="/goods/detail/?id={{cgoods.id}}">{{cgoods.gname|truncatechars:15}}</a>
 				{%endfor%}
 			</div>
 			<a href="/goods/list/?id={{type.type.id}}" class="goods_more fr" >查看更多 ></a>
 		</div>
 
 		<div class="goods_con clearfix">
-			<div class="goods_banner fl"><img src="/static/images/banner0{{type.type.id}}.jpg"></div>
+			<div class="goods_banner fl"><img src="/static/images/banner0{{forloop.counter}}.jpg"></div>
 			<ul class="goods_list fl">
                 {%for ngoods in type.nlist%}
 				<li>
-					<h4><a href="/goods/detail/?id={{ngoods.id}}">{{ngoods.gname}}</a></h4>
+					<h4><a href="/goods/detail/?id={{ngoods.id}}">{{ngoods.gname|truncatechars:15}}</a></h4>
 					<a href="/goods/detail/?id={{ngoods.id}}"><img src="/static/{{ngoods.gimg}}"></a>
 					<div class="prize">¥ {{ngoods.gpric}}</div>
 				</li>
