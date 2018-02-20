@@ -54,33 +54,34 @@ def type_list(req):
 
 
 def detail(req):
-    try:
-        if req.GET.get('id'):
-            id = req.GET.get('id')
-            goods = GoodsInfo.objects.get(pk=id)
-            #增加点击量
-            goods.gclicks += 1
-            goods.save()
-            # 推荐商品  找出该商品所在的类型 再去该类型的另外两个商品
-            tgoods = goods.gtype.goodsinfo_set.order_by('-id')[:2]
-            context = {'title': '商品详情', 'car_order': 'ok', 'user': '', 'goods': goods,"tgoods":tgoods}
-            reqest = render(req, 'goods/detail.html', context)
-            # 记录最近浏览信息
-            id_lists = []
-            if req.COOKIES.has_key('glist_id'):
-                id_lists = req.COOKIES['glist_id'].split(',')   # 字符串转列表
-            # 把重复浏览的 重新拍到前面
-            if id in id_lists:
-                id_lists.remove(id)
-            id_lists.insert(0,id)
-            # 如果大于5条  删掉最后一条
-            if len(id_lists)>5:
-                id_lists.pop()
-            glist_id = ','.join(id_lists)  # 列表转字符串
-            reqest.set_cookie('glist_id',value=glist_id,max_age=60*60*24*7)
 
-            return reqest
-        else:
-            return render(req, 'goods/list.html')
-    except:
-        return render(req,'404.html')
+    if req.GET.get('id'):
+        id = req.GET.get('id')
+        goods = GoodsInfo.objects.get(pk=id)
+        #增加点击量
+        goods.gclicks += 1
+        goods.save()
+        # 推荐商品  找出该商品所在的类型 再去该类型的另外两个商品
+        tgoods = goods.gtype.goodsinfo_set.order_by('-id')[:2]
+        context = {'title': '商品详情', 'car_order': 'ok', 'user': '', 'goods': goods,"tgoods":tgoods}
+        reqest = render(req, 'goods/detail.html', context)
+        # 记录最近浏览信息
+        id_lists = []
+        if req.COOKIES.has_key('glist_id'):
+            id_lists = req.COOKIES['glist_id'].split(',')   # 字符串转列表
+        # 把重复浏览的 重新拍到前面
+        if id in id_lists:
+            id_lists.remove(id)
+        id_lists.insert(0,id)
+        # 如果大于5条  删掉最后一条
+        if len(id_lists)>5:
+            id_lists.pop()
+        glist_id = ','.join(id_lists)  # 列表转字符串
+        reqest.set_cookie('glist_id',value=glist_id,max_age=60*60*24*7)
+
+        return reqest
+    else:
+        return render(req, 'goods/list.html')
+
+
+
