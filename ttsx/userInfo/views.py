@@ -5,6 +5,8 @@ from models import *
 from hashlib import sha1
 import datetime
 from user_check import *
+
+from ttsx_goods.models import *
 # Create your views here.
 
 
@@ -79,7 +81,12 @@ def logout(req):
 @check
 def info(req):
     user = UserInfo.objects.get(id=req.session.get('uid'))
-    context = {'title': '用户中心', "active": "info", 'user': user,'position_name':'用户中心'}
+    # 最近浏览
+    newgoods = []
+    id_lists = req.COOKIES['glist_id'].split(',')
+    for id in id_lists:
+        newgoods.append(GoodsInfo.objects.filter(id=id)[0])
+    context = {'title': '用户中心', "active": "info", 'user': user,'position_name':'用户中心','newgoods':newgoods}
     return render(req, 'userInfo/user_center_info.html', context)
 
 @check
