@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'tinymce',
     'userInfo',
     'ttsx_goods',
+    'ttsx_car',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -134,3 +135,5 @@ HAYSTACK_CONNECTIONS = {
 }
 #当添加、修改、删除数据时，自动生成索引
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+# 每页显示12条搜索结果
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 12

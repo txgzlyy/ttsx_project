@@ -73,10 +73,15 @@ def loging(req):
         context['uname_err'] = 1
         return render(req, 'userInfo/login.html',context)
 
+def islogin(req):
+    res = 0
+    if req.session.has_key('uid'):
+        res = 1
+    return JsonResponse({'data':res})
+
 def logout(req):
     req.session.flush()
     return redirect('/user/login/')
-
 
 @check
 def info(req):

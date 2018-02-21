@@ -55,7 +55,7 @@
 			<div class="total">总价：<em id="allpric">16.80元</em></div>
 			<div class="operate_btn">
 				<a href="javascript:;" class="buy_btn">立即购买</a>
-				<a href="javascript:;" class="add_cart" id="add_cart">加入购物车</a>				
+				<a href="javascript:cartAdd({{goods.id}});" class="add_cart" id="add_cart">加入购物车</a>
 			</div>
 		</div>
 	</div>
@@ -96,14 +96,39 @@
 	<div class="add_jump"></div>
 
 	<script type="text/javascript">
-		var $add_x = $('#add_cart').offset().top;
-		var $add_y = $('#add_cart').offset().left;
 
-		var $to_x = $('#show_count').offset().top;
-		var $to_y = $('#show_count').offset().left;
+		//
+		var conut = $('.num_show').val();
+		var pric = {{goods.gpric}}
+		$('.num_show').blur(function () {
+		    conut = $('.num_show').val();
+			$('#allpric').html(Math.round(conut*pric*100)/100+'元')
+        })
 
-		$(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'})
-		$('#add_cart').click(function(){
+		$('.add').on('click',function () {
+			conut++;
+			$('.num_show').val(conut)
+			$('#allpric').html(Math.round(conut*pric*100)/100+'元')
+        });
+		$('.minus').on('click',function () {
+		    if(conut>0){
+		        conut--;
+				$('.num_show').val(conut)
+				$('#allpric').html(Math.round(conut*pric*100)/100+'元')
+			}
+        });
+        $('#allpric').html(Math.round(conut*pric*100)/100+'元')
+
+
+
+		function add() {
+			var $add_x = $('#add_cart').offset().top;
+			var $add_y = $('#add_cart').offset().left;
+
+			var $to_x = $('#show_count').offset().top;
+			var $to_y = $('#show_count').offset().left;
+
+			$(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'})
 			$(".add_jump").stop().animate({
 				'left': $to_y+7,
 				'top': $to_x+7},
@@ -111,30 +136,29 @@
 					$(".add_jump").fadeOut('fast',function(){
 						$('#show_count').html(2);
 					});
-
 			});
-		});
-		//
-		var conut = $('.num_show').val();
-		var pric = {{goods.gpric}}
-		$('.num_show').blur(function () {
-		    conut = $('.num_show').val();
-			$('#allpric').html(conut*pric+'元')
-        })
+		}
+		function cartAdd(gid){
+		    // 判断是非登录
+			$.get('/user/islogin/',function (data) {
+				if(data.data){
+					$.get('/car/add/',{'id':gid,'cont':conut},function (data) {
+						if(data.isadd){
+							add()
+							location.href = '/car/info/'
+						}else{
+							// 保存失败
+							alert('保存失败')
+						}
+					})
+				}else{
+					location.href = '/user/login/'
+				}
+			})
+		}
 
-		$('.add').on('click',function () {
-			conut++;
-			$('.num_show').val(conut)
-			$('#allpric').html(conut*pric+'元')
-        });
-		$('.minus').on('click',function () {
-		    if(conut>0){
-		        conut--;
-				$('.num_show').val(conut)
-				$('#allpric').html(conut*pric+'元')
-			}
-        });
-        $('#allpric').html(conut*pric+'元')
+
+
 
 
 	</script>
