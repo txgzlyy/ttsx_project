@@ -8,9 +8,9 @@
 	<div class="common_list_con clearfix">
 		<dl>
 			<dt>寄送到：</dt>
-			<dd><input type="radio" name="" checked="">北京市 海淀区 东北旺西路8号中关村软件园 （李思 收） 182****7528</dd>
+			<dd><input type="radio" name="" checked="">{{user.address}} （{{user.shou_name}} 收） {{user.tel_num}}</dd>
 		</dl>
-		<a href="userInfo/user_center_site.html" class="edit_site">编辑收货地址</a>
+		<a href="/user/site/" class="edit_site">编辑收货地址</a>
 
 	</div>
 	
@@ -38,33 +38,26 @@
 			<li class="col04">数量</li>
 			<li class="col05">小计</li>		
 		</ul>
+		{%for goods in goods_lists%}
 		<ul class="goods_list_td clearfix">
-			<li class="col01">1</li>			
-			<li class="col02"><img src="/static/images/goods/goods012.jpg"></li>
-			<li class="col03">奇异果</li>
-			<li class="col04">500g</li>
-			<li class="col05">25.80元</li>
-			<li class="col06">1</li>
+			<li class="col01">{{forloop.counter}}</li>
+			<li class="col02"><img src="/static/{{goods.goods.gimg}}"></li>
+			<li class="col03">{{goods.goods.gname|truncatechars:16}}</li>
+			<li class="col04">{{goods.goods.gmete}}</li>
+			<li class="col05">{{goods.goods.gpric}}元</li>
+			<li class="col06">{{goods.cont}}</li>
 			<li class="col07">25.80元</li>	
 		</ul>
-		<ul class="goods_list_td clearfix">
-			<li class="col01">2</li>			
-			<li class="col02"><img src="/static/images/goods/goods003.jpg"></li>
-			<li class="col03">大兴大棚草莓</li>
-			<li class="col04">500g</li>
-			<li class="col05">16.80元</li>
-			<li class="col06">1</li>
-			<li class="col07">16.80元</li>	
-		</ul>
+		{%endfor%}
 	</div>
 
 	<h3 class="common_title">总金额结算</h3>
 
 	<div class="common_list_con clearfix">
 		<div class="settle_con">
-			<div class="total_goods_count">共<em>2</em>件商品，总金额<b>42.60元</b></div>
-			<div class="transit">运费：<b>10元</b></div>
-			<div class="total_pay">实付款：<b>52.60元</b></div>
+			<div class="total_goods_count">共<em>{{goods_lists|length}}</em>件商品，总金额<b id="allpric">42.60元</b></div>
+			<div class="transit">运费：<b id="kdf">10元</b></div>
+			<div class="total_pay">实付款：<b id="money">52.60元</b></div>
 		</div>
 	</div>
 
@@ -86,5 +79,33 @@
 
 			});
 		});
+
+		//        --------------
+		$(function () {
+		    for(var i=0;i<$('.goods_list_td').length;i++){
+				init($($('.goods_list_td')[i]))
+			};
+		    // 统计每个商品的总价
+			function init(obj) {
+				var conut = obj.find('.col06').html();
+				var pric = obj.find('.col05').html().replace(/元/,'');
+				obj.find('.col07').html(Math.round(conut*pric*100)/100+'元')
+            }
+		    pricall(); // 初始化总金额
+		    function pricall() {
+				var alGoodsPric = 0;
+				var kdf = $('#kdf').html().replace(/元/,'')*1;
+				for(var i=0;i<$('.col07').length;i++){
+					alGoodsPric += $($('.col07')[i]).html().replace(/元/,'')*1; // 字符串转化成数字
+					//console.log(alGoodsPric)
+				}
+				$('#allpric').html(alGoodsPric+'元');
+
+				$('#money').html(alGoodsPric+kdf+'元')
+            }
+        });
+
+
+
 	</script>
     {%endblock body%}

@@ -13,12 +13,12 @@
 		<li class="col06">操作</li>
 	</ul>
 	{%for goods in goods_lists%}
-	<ul class="cart_list_td clearfix">
+	<ul class="cart_list_td clearfix" data-gid="{{goods.goods.id}}">
 		<li class="col01"><input type="checkbox" name="" checked></li>
 		<li class="col02"><img src="/static/{{goods.goods.gimg}}"></li>
-		<li class="col03">{{goods.goods.gname}}<br><em>25.80元/500g</em></li>
-		<li class="col04">500g</li>
-		<li class="col05">25.80元</li>
+		<li class="col03">{{goods.goods.gname}}<br><em>{{goods.goods.gpric}}元/{{goods.goods.gmete}}</em></li>
+		<li class="col04">{{goods.goods.gmete}}</li>
+		<li class="col05">{{goods.goods.gpric}}元</li>
 		<li class="col06">
 			<div class="num_add">
 				<a href="javascript:;" class="add fl">+</a>
@@ -26,8 +26,8 @@
 				<a href="javascript:;" class="minus fl">-</a>	
 			</div>
 		</li>
-		<li class="col07">25.80元</li>
-		<li class="col08"><a href="javascript:;">删除</a></li>
+		<li class="col07"></li>
+		<li class="col08"><a href="javascript:del({{goods.goods.id}});">删除</a></li>
 	</ul>
 	{%endfor%}
 
@@ -35,7 +35,73 @@
 	<ul class="settlements">
 		<li class="col01"><input type="checkbox" name="" checked=""></li>
 		<li class="col02">全选</li>
-		<li class="col03">合计(不含运费)：<span>¥</span><em>42.60</em><br>共计<b>2</b>件商品</li>
-		<li class="col04"><a href="place_order.html">去结算</a></li>
+		<li class="col03">合计(不含运费)：<span>¥</span><em id="allpric">42.60</em><br>共计<b>{{goods_lists|length}}</b>件商品</li>
+		<li class="col04"><a href="/car/place/">去结算</a></li>
 	</ul>
+	<script>
+		$(function () {
+
+		    for(var i=0;i<$('.cart_list_td').length;i++){
+				init($($('.cart_list_td')[i]))
+			};
+
+		    pricall(); // 初始化总金额
+		    function pricall() {
+				var alGoodsPric = 0
+				for(var i=0;i<$('.col07').length;i++){
+					alGoodsPric += $($('.col07')[i]).html().replace(/元/,'')*1; // 字符串转化成数字
+					//console.log(alGoodsPric)
+				}
+				$('#allpric').html(alGoodsPric)
+            }
+
+            // 和后台同步修改数量
+            function placeOrder(obj,conut) {
+		        var gid = obj.data('gid'); // 获取自定义属性值
+				//console.log(gid)
+				$.get('/car/change/',{'id':gid,'cont':conut})
+            }
+
+			function init(obj) {
+				var conut = obj.find('.num_show').val();
+				var pric = obj.find('.col05').html().replace(/元/,'');
+
+				obj.find('.num_show').blur(function () {
+					conut = obj.find('.num_show').val();
+					obj.find('.col07').html(Math.round(conut*pric*100)/100+'元');
+					pricall()
+					placeOrder(obj,conut)
+				});
+
+				obj.find('.add').on('click',function () {
+					conut++;
+					obj.find('.num_show').val(conut);
+					obj.find('.col07').html(Math.round(conut*pric*100)/100+'元');
+					pricall()
+					placeOrder(obj,conut)
+				});
+				obj.find('.minus').on('click',function () {
+					if(conut>0){
+						conut--;
+						obj.find('.num_show').val(conut);
+						obj.find('.col07').html(Math.round(conut*pric*100)/100+'元');
+						pricall()
+						placeOrder(obj,conut)
+					}
+				});
+				obj.find('.col07').html(Math.round(conut*pric*100)/100+'元')
+            }
+        });
+
+		// 删除
+		function del(gid){
+			$.get('/car/del/',{'id':gid},function (data) {
+				if(data.isdel){
+					location.reload();  // 刷新页面
+				}else{
+				    alert('系统繁忙请重试')
+				}
+			})
+		}
+	</script>
     {%endblock body%}

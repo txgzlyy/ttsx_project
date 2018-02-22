@@ -119,7 +119,7 @@
 				$.get('/user/islogin/',function (data) {
 					if(data.data){
 					    $.get('/car/add/',{'id':gid},function (data) {
-					        console.log(data.isadd)
+					        //console.log(data.isadd);
 							if(data.isadd){
 							    add()
 							}else{
@@ -133,5 +133,4 @@
                 })
             }
 	</script>
-
     {%endblock body%}
