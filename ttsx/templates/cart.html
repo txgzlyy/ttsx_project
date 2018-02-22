@@ -13,8 +13,8 @@
 		<li class="col06">操作</li>
 	</ul>
 	{%for cart in ucart%}
-	<ul class="cart_list_td clearfix" data-gid="{{goods.goods.id}}">
-		<li class="col01"><input type="checkbox" checked></li>
+	<ul class="cart_list_td clearfix" data-gid="{{cart.goods.id}}">
+		<li class="col01"><input class="gchecked" type="checkbox" checked="checked"></li>
 		<li class="col02"><img src="/static/{{cart.goods.gimg}}"></li>
 		<li class="col03">{{cart.goods.gname}}<br><em>{{cart.goods.gpric}}元/{{cart.goods.gmete}}</em></li>
 		<li class="col04">{{cart.goods.gmete}}</li>
@@ -27,11 +27,11 @@
 			</div>
 		</li>
 		<li class="col07"></li>
-		<li class="col08"><a href="javascript:del({{goods.goods.id}});">删除</a></li>
+		<li class="col08"><a href="javascript:del({{cart.goods.id}});">删除</a></li>
 	</ul>
 	{%endfor%}
 	<ul class="settlements">
-		<li class="col01"><input type="checkbox" id="checked_all" checked=""></li>
+		<li class="col01"><input type="checkbox" id="checked_all" checked="checked"></li>
 		<li class="col02">全选</li>
 		<li class="col03">合计(不含运费)：<span>¥</span><em id="allpric">42.60</em><br>共计<b id="num_all"></b>件商品</li>
 		<li class="col04"><a href="javascript:;">去结算</a></li>
@@ -47,20 +47,20 @@
 				$(this).find('.num_show').blur(function () {
 					conut = _this.find('.num_show').val();
 					_this.find('.col07').html(Math.round(conut*pric*100)/100+'元');
-					pricall(_this)
+					pricall()
 				});
 				$(this).find('.add').on('click',function () {
 					conut++;
 					_this.find('.num_show').val(conut);
 					_this.find('.col07').html(Math.round(conut*pric*100)/100+'元');
-					pricall(_this)
+					pricall()
 				});
 				$(this).find('.minus').on('click',function () {
 					if(conut>0){
 						conut--;
 						_this.find('.num_show').val(conut);
 						_this.find('.col07').html(Math.round(conut*pric*100)/100+'元');
-						pricall(_this)
+						pricall()
 					}
 				});
 
@@ -71,10 +71,10 @@
             $('#allpric').html(Math.round(alGoodsPric*100)/100);
             $('#num_all').html($(":checked:not('#checked_all')").length);
 
-            function pricall(obj) {
-                alGoodsPric = 0; // 至0
+            function pricall() {
+                 alGoodsPric = 0; // 至0
                  $('.cart_list_td').each(function () {
-                     if(obj.find(":checked")){
+                     if($(this).find(":checked").val()){
                          var conut = $(this).find('.num_show').val();
 						 var pric = $(this).find('.col05').html().replace(/元/, '');
 						 var tatla = Math.round(conut*pric*100)/100;
@@ -82,19 +82,39 @@
 					 }
                  });
 				$('#allpric').html(Math.round(alGoodsPric*100)/100);
+				$('#num_all').html($(":checked:not('#checked_all')").length);
             }
+            // 勾选与否界面改变
+			$(":checked").each(function () {
+				$(this).change(function () {
+					pricall()
+                })
+            });
+            $('#checked_all').change(function () {
+				$(".gchecked").each(function () {
+					if($(this).prop("checked")){
+					    $(this).prop("checked",false);
+					}else {
+					    $(this).prop("checked",true);
+					}
+				});
+				pricall()
+            })
 
             // 和后台同步修改数量
             $('.col04').on('click',function () {
 		        var infos = [];
 				//获取每个商品的id和个数
-				for(var i=0;i<$('.cart_list_td').length;i++){
-				    var gid = $($('.cart_list_td')[i]).data('gid');
-				    var cont = $($('.cart_list_td')[i]).find('.num_show').val();
+				$('.cart_list_td').each(function () {
+				    var gid = $(this).data('gid');
+				    var cont = $(this).find('.num_show').val();
 				    var info = {'id':gid,'cont':cont};
-                    infos.push(info)
-				};
+				    if($(this).find(":checked").val()) {
+                        infos.push(info)
+                    }
+				});
 				$.get('/car/change/',{'infos':JSON.stringify(infos)},function (data) {
+				    console.log(data.ischange)
                     if(data.ischange){
                         location.href = '/car/place/'
 					}

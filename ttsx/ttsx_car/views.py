@@ -23,11 +23,7 @@ def place_order(req):
     uid = int(req.session.get('uid'))
     ucart = CarInfo.objects.filter(user_id=uid)
     user = UserInfo.objects.filter(id=uid)[0]
-    for item in ucart:
-        goodsa = {'goods':GoodsInfo.objects.filter(id=item.goods_id)[0],'cont':item.cont}
-        goods_list.append(goodsa)
-
-    context = {'title': '提交订单', 'position_name': '提交订单','goods_lists':goods_list,'user':user}
+    context = {'title': '提交订单', 'position_name': '提交订单','ucart':ucart,'user':user}
     return render(req, 'place_order.html', context)
 
 

@@ -38,7 +38,7 @@
 			<li class="col04">数量</li>
 			<li class="col05">小计</li>		
 		</ul>
-		{%for goods in goods_lists%}
+		{%for goods in ucart%}
 		<ul class="goods_list_td clearfix">
 			<li class="col01">{{forloop.counter}}</li>
 			<li class="col02"><img src="/static/{{goods.goods.gimg}}"></li>
