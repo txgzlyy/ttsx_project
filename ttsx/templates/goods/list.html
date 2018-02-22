@@ -108,7 +108,9 @@
 					'top': $to_x+7},
 					"fast", function() {
 						$(".add_jump").fadeOut('fast',function(){
-							$('#show_count').html(2);
+						    $.get('/car/cont/',function (data) {
+								$('#show_count').html(data.cont);
+							})
 						});
 
 				});

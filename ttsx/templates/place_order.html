@@ -99,9 +99,9 @@
 					alGoodsPric += $($('.col07')[i]).html().replace(/元/,'')*1; // 字符串转化成数字
 					//console.log(alGoodsPric)
 				}
-				$('#allpric').html(alGoodsPric+'元');
+				$('#allpric').html(Math.round(alGoodsPric*100)/100+'元');
 
-				$('#money').html(alGoodsPric+kdf+'元')
+				$('#money').html(Math.round(alGoodsPric*100)/100+kdf+'元')
             }
         });
 

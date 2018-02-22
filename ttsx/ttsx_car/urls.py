@@ -7,4 +7,5 @@ urlpatterns = [
     url(r'^add/$', views.caradd),
     url(r'^del/$', views.dels),
     url(r'^change/$',views.carchange),
+    url(r'^cont/$',views.cont),
 ]

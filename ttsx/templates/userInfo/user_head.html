@@ -29,8 +29,6 @@
 		</div>
 	</div>
 
-
-
 	<div class="search_bar clearfix">
 		<a href="/" class="logo fl"><img src="/static/images/logo.png"></a>
 		{%if position_name%}
@@ -47,6 +45,17 @@
 			<a href="/car/info/" class="cart_name fl">我的购物车</a>
 			<div class="goods_count fl" id="show_count">1</div>
 		</div>
+		<script>
+			// 判断登陆
+			if($('.login_btn').text().indexOf('登录')<0){  // 已经登录
+				$.get('/car/cont/',function (data) {
+                    $('#show_count').html(data.cont)
+                })
+
+			}
+		</script>
+
+
 		{%endif%}
 	</div>
 

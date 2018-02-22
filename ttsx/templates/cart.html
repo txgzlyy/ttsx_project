@@ -3,7 +3,7 @@
 	{%block body%}
     {%include 'userInfo/user_head.html'%}
 
-	<div class="total_count">全部商品<em>{{goods_lists|length}}</em>件</div>
+	<div class="total_count">全部商品<em>{{ucart|length}}</em>件</div>
 	<ul class="cart_list_th clearfix">
 		<li class="col01">商品名称</li>
 		<li class="col02">商品单位</li>
@@ -12,17 +12,17 @@
 		<li class="col05">小计</li>
 		<li class="col06">操作</li>
 	</ul>
-	{%for goods in goods_lists%}
+	{%for cart in ucart%}
 	<ul class="cart_list_td clearfix" data-gid="{{goods.goods.id}}">
-		<li class="col01"><input type="checkbox" name="" checked></li>
-		<li class="col02"><img src="/static/{{goods.goods.gimg}}"></li>
-		<li class="col03">{{goods.goods.gname}}<br><em>{{goods.goods.gpric}}元/{{goods.goods.gmete}}</em></li>
-		<li class="col04">{{goods.goods.gmete}}</li>
-		<li class="col05">{{goods.goods.gpric}}元</li>
+		<li class="col01"><input type="checkbox" checked></li>
+		<li class="col02"><img src="/static/{{cart.goods.gimg}}"></li>
+		<li class="col03">{{cart.goods.gname}}<br><em>{{cart.goods.gpric}}元/{{cart.goods.gmete}}</em></li>
+		<li class="col04">{{cart.goods.gmete}}</li>
+		<li class="col05">{{cart.goods.gpric}}元</li>
 		<li class="col06">
 			<div class="num_add">
 				<a href="javascript:;" class="add fl">+</a>
-				<input type="text" class="num_show fl" value="{{goods.cont}}">
+				<input type="text" class="num_show fl" value="{{cart.cont}}">
 				<a href="javascript:;" class="minus fl">-</a>	
 			</div>
 		</li>
@@ -30,69 +30,77 @@
 		<li class="col08"><a href="javascript:del({{goods.goods.id}});">删除</a></li>
 	</ul>
 	{%endfor%}
-
-
 	<ul class="settlements">
-		<li class="col01"><input type="checkbox" name="" checked=""></li>
+		<li class="col01"><input type="checkbox" id="checked_all" checked=""></li>
 		<li class="col02">全选</li>
-		<li class="col03">合计(不含运费)：<span>¥</span><em id="allpric">42.60</em><br>共计<b>{{goods_lists|length}}</b>件商品</li>
-		<li class="col04"><a href="/car/place/">去结算</a></li>
+		<li class="col03">合计(不含运费)：<span>¥</span><em id="allpric">42.60</em><br>共计<b id="num_all"></b>件商品</li>
+		<li class="col04"><a href="javascript:;">去结算</a></li>
 	</ul>
 	<script>
 		$(function () {
+		    var alGoodsPric = 0;
+		    $('.cart_list_td').each(function () {
+				var conut = $(this).find('.num_show').val();
+				var pric = $(this).find('.col05').html().replace(/元/,'');
+				var _this = $(this);
 
-		    for(var i=0;i<$('.cart_list_td').length;i++){
-				init($($('.cart_list_td')[i]))
-			};
+				$(this).find('.num_show').blur(function () {
+					conut = _this.find('.num_show').val();
+					_this.find('.col07').html(Math.round(conut*pric*100)/100+'元');
+					pricall(_this)
+				});
+				$(this).find('.add').on('click',function () {
+					conut++;
+					_this.find('.num_show').val(conut);
+					_this.find('.col07').html(Math.round(conut*pric*100)/100+'元');
+					pricall(_this)
+				});
+				$(this).find('.minus').on('click',function () {
+					if(conut>0){
+						conut--;
+						_this.find('.num_show').val(conut);
+						_this.find('.col07').html(Math.round(conut*pric*100)/100+'元');
+						pricall(_this)
+					}
+				});
 
-		    pricall(); // 初始化总金额
-		    function pricall() {
-				var alGoodsPric = 0
-				for(var i=0;i<$('.col07').length;i++){
-					alGoodsPric += $($('.col07')[i]).html().replace(/元/,'')*1; // 字符串转化成数字
-					//console.log(alGoodsPric)
-				}
-				$('#allpric').html(alGoodsPric)
+				var tatla = Math.round(conut*pric*100)/100;
+				$(this).find('.col07').html(tatla+'元');
+				alGoodsPric += tatla;
+            });
+            $('#allpric').html(Math.round(alGoodsPric*100)/100);
+            $('#num_all').html($(":checked:not('#checked_all')").length);
+
+            function pricall(obj) {
+                alGoodsPric = 0; // 至0
+                 $('.cart_list_td').each(function () {
+                     if(obj.find(":checked")){
+                         var conut = $(this).find('.num_show').val();
+						 var pric = $(this).find('.col05').html().replace(/元/, '');
+						 var tatla = Math.round(conut*pric*100)/100;
+						 alGoodsPric += tatla;
+					 }
+                 });
+				$('#allpric').html(Math.round(alGoodsPric*100)/100);
             }
 
             // 和后台同步修改数量
-            function placeOrder(obj,conut) {
-		        var gid = obj.data('gid'); // 获取自定义属性值
-				//console.log(gid)
-				$.get('/car/change/',{'id':gid,'cont':conut})
-            }
-
-			function init(obj) {
-				var conut = obj.find('.num_show').val();
-				var pric = obj.find('.col05').html().replace(/元/,'');
-
-				obj.find('.num_show').blur(function () {
-					conut = obj.find('.num_show').val();
-					obj.find('.col07').html(Math.round(conut*pric*100)/100+'元');
-					pricall()
-					placeOrder(obj,conut)
-				});
-
-				obj.find('.add').on('click',function () {
-					conut++;
-					obj.find('.num_show').val(conut);
-					obj.find('.col07').html(Math.round(conut*pric*100)/100+'元');
-					pricall()
-					placeOrder(obj,conut)
-				});
-				obj.find('.minus').on('click',function () {
-					if(conut>0){
-						conut--;
-						obj.find('.num_show').val(conut);
-						obj.find('.col07').html(Math.round(conut*pric*100)/100+'元');
-						pricall()
-						placeOrder(obj,conut)
+            $('.col04').on('click',function () {
+		        var infos = [];
+				//获取每个商品的id和个数
+				for(var i=0;i<$('.cart_list_td').length;i++){
+				    var gid = $($('.cart_list_td')[i]).data('gid');
+				    var cont = $($('.cart_list_td')[i]).find('.num_show').val();
+				    var info = {'id':gid,'cont':cont};
+                    infos.push(info)
+				};
+				$.get('/car/change/',{'infos':JSON.stringify(infos)},function (data) {
+                    if(data.ischange){
+                        location.href = '/car/place/'
 					}
-				});
-				obj.find('.col07').html(Math.round(conut*pric*100)/100+'元')
-            }
+                })
+            });
         });
-
 		// 删除
 		function del(gid){
 			$.get('/car/del/',{'id':gid},function (data) {
