@@ -1,8 +1,11 @@
     {%extends 'base.html'%}
 
+    {%block linkjs%}
+	<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+	{%endblock linkjs%}
+
 	{%block body%}
     {%include 'userInfo/user_head.html'%}
-
 	<div class="total_count">全部商品<em>{{ucart|length}}</em>件</div>
 	<ul class="cart_list_th clearfix">
 		<li class="col01">商品名称</li>
@@ -13,7 +16,7 @@
 		<li class="col06">操作</li>
 	</ul>
 	{%for cart in ucart%}
-	<ul class="cart_list_td clearfix" data-gid="{{cart.goods.id}}">
+	<ul class="cart_list_td clearfix" id="{{cart.goods.id}}">
 		<li class="col01"><input class="gchecked" type="checkbox" checked="checked"></li>
 		<li class="col02"><img src="/static/{{cart.goods.gimg}}"></li>
 		<li class="col03">{{cart.goods.gname}}<br><em>{{cart.goods.gpric}}元/{{cart.goods.gmete}}</em></li>
@@ -30,6 +33,9 @@
 		<li class="col08"><a href="javascript:del({{cart.goods.id}});">删除</a></li>
 	</ul>
 	{%endfor%}
+	<form>
+		{% csrf_token %}
+	</form>
 	<ul class="settlements">
 		<li class="col01"><input type="checkbox" id="checked_all" checked="checked"></li>
 		<li class="col02">全选</li>
@@ -37,6 +43,7 @@
 		<li class="col04"><a href="javascript:;">去结算</a></li>
 	</ul>
 	<script>
+
 		$(function () {
 		    var alGoodsPric = 0;
 		    $('.cart_list_td').each(function () {
@@ -46,6 +53,13 @@
 
 				$(this).find('.num_show').blur(function () {
 					conut = _this.find('.num_show').val();
+					if(isNaN(conut)){
+					    conut = 1
+					}
+					if(conut<1){
+					    conut = 1
+					}
+					_this.find('.num_show').val(conut);
 					_this.find('.col07').html(Math.round(conut*pric*100)/100+'元');
 					pricall()
 				});
@@ -56,7 +70,7 @@
 					pricall()
 				});
 				$(this).find('.minus').on('click',function () {
-					if(conut>0){
+					if(conut>1){
 						conut--;
 						_this.find('.num_show').val(conut);
 						_this.find('.col07').html(Math.round(conut*pric*100)/100+'元');
@@ -85,51 +99,75 @@
 				$('#num_all').html($(":checked:not('#checked_all')").length);
             }
             // 勾选与否界面改变
-			$(":checked").each(function () {
+			function onoff() {  // 是否每个商品勾选  有一个没勾返回false
+				var onoff = true;
+				$(".gchecked").each(function () {
+					if(!$(this).prop("checked")){
+						onoff =  false;
+					}
+				});
+				return onoff
+            }
+
+			$(":checkbox").each(function () {
 				$(this).change(function () {
+				    $('#checked_all').prop("checked",onoff())
 					pricall()
                 })
             });
-            $('#checked_all').change(function () {
+            $('#checked_all').click(function () {
+                var checked = $(this).prop("checked");
 				$(".gchecked").each(function () {
-					if($(this).prop("checked")){
-					    $(this).prop("checked",false);
-					}else {
-					    $(this).prop("checked",true);
-					}
+					$(this).prop("checked",checked);
 				});
 				pricall()
-            })
+            });
 
-            // 和后台同步修改数量
+
+			// 验证 csrf
+			function srcf_check() {
+				$.ajaxSetup({
+				  beforeSend: function(xhr, settings){
+					  var csrftoken = $.cookie('csrftoken');
+					  xhr.setRequestHeader("X-CSRFToken", csrftoken);
+				  }
+				});
+			}
+			// 结算
             $('.col04').on('click',function () {
 		        var infos = [];
 				//获取每个商品的id和个数
 				$('.cart_list_td').each(function () {
-				    var gid = $(this).data('gid');
+				    var gid = $(this).prop('id');
 				    var cont = $(this).find('.num_show').val();
 				    var info = {'id':gid,'cont':cont};
-				    if($(this).find(":checked").val()) {
+				    if($(this).find(":checkbox").prop("checked")) {
                         infos.push(info)
                     }
 				});
-				$.get('/car/change/',{'infos':JSON.stringify(infos)},function (data) {
-				    console.log(data.ischange)
+				srcf_check();  // 验证 csrf
+				$.post('/car/change/',{'infos':JSON.stringify(infos)},function (data) {
                     if(data.ischange){
                         location.href = '/car/place/'
+					}else{
+						alert('系统繁忙请重试')
 					}
                 })
             });
         });
 		// 删除
 		function del(gid){
-			$.get('/car/del/',{'id':gid},function (data) {
-				if(data.isdel){
-					location.reload();  // 刷新页面
-				}else{
-				    alert('系统繁忙请重试')
-				}
-			})
+		    if(confirm('确定要删除吗？')){
+		        $.get('/car/del/',{'id':gid},function (data) {
+					if(data.isdel){
+						//$('#'+gid).remove()
+						reload()
+					}else{
+						alert('系统繁忙请重试')
+					}
+				})
+			}
+
 		}
 	</script>
     {%endblock body%}

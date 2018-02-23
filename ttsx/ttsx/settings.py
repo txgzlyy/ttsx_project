@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'userInfo',
     'ttsx_goods',
     'ttsx_car',
+    'ttsx_order',
 )
 
 MIDDLEWARE_CLASSES = (

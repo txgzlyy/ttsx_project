@@ -9,3 +9,4 @@ class CarInfo(models.Model):
     user = models.ForeignKey(UserInfo)
     goods = models.ForeignKey(GoodsInfo)
     cont = models.IntegerField(default=0)
+    isplace = models.BooleanField(default=False)

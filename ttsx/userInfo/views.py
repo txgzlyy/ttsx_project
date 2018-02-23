@@ -1,5 +1,5 @@
 #coding=utf-8
-from django.shortcuts import render,redirect
+from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse,HttpResponseRedirect
 from models import *
 from hashlib import sha1
@@ -7,6 +7,8 @@ import datetime
 from user_check import *
 
 from ttsx_goods.models import *
+from ttsx_order.models import *
+from django.core.paginator import Paginator
 # Create your views here.
 
 
@@ -85,7 +87,7 @@ def logout(req):
 
 @check
 def info(req):
-    user = UserInfo.objects.get(id=req.session.get('uid'))
+    user = UserInfo.objects.filter(id=req.session.get('uid'))[0]
     # 最近浏览
     newgoods = []
     id_lists = req.COOKIES['glist_id'].split(',')
@@ -96,13 +98,20 @@ def info(req):
 
 @check
 def order(req):
-    user = UserInfo.objects.get(id=req.session.get('uid'))
-    context = {'title': '用户中心', "active": "order", 'user': user,'position_name':'用户中心'}
+    num = int(req.GET.get('page','1'))
+    uid = req.session.get('uid')
+    user = UserInfo.objects.filter(id=uid)[0]
+    # 查询订单
+    orders = OrderMain.objects.filter(user_id=uid)
+    paginator = Paginator(orders, 2)  # 每页15条
+    page = paginator.page(num)  # 第 num 页数据
+
+    context = {'title': '用户中心', "active": "order", 'user': user,'position_name':'用户中心','orders':page}
     return render(req,'userInfo/user_center_order.html',context)
 
 @check
 def site(req):
-    user = UserInfo.objects.get(id=req.session.get('uid'))
+    user = UserInfo.objects.filter(id=req.session.get('uid'))[0]
     if req.method == 'POST':
         post = req.POST
         user.shou_name = post.get('shou_name')

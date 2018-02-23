@@ -61,24 +61,27 @@
 		</div>
 	</div>
 
+	<form method="POST" action="/order/">
+		{% csrf_token %}
 	<div class="order_submit clearfix">
-		<a href="javascript:;" id="order_btn">提交订单</a>
+		<input type="submit" id="order_btn" value="提交订单"/>
 	</div>
+	</form>
 
 	<script type="text/javascript">
-		$('#order_btn').click(function() {
-			localStorage.setItem('order_finish',2);
-
-			$('.popup_con').fadeIn('fast', function() {
-
-				setTimeout(function(){
-					$('.popup_con').fadeOut('fast',function(){
-						window.location.href = 'goods/index.html';
-					});
-				},3000)
-
-			});
-		});
+//		$('#order_btn').click(function() {
+//			localStorage.setItem('order_finish',2);
+//
+//			$('.popup_con').fadeIn('fast', function() {
+//
+//				setTimeout(function(){
+//					$('.popup_con').fadeOut('fast',function(){
+//						window.location.href = 'goods/index.html';
+//					});
+//				},3000)
+//
+//			});
+//		});
 
 		//        --------------
 		$(function () {

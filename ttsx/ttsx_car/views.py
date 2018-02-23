@@ -21,10 +21,11 @@ def mycar(req):
 def place_order(req):
     goods_list = []
     uid = int(req.session.get('uid'))
-    ucart = CarInfo.objects.filter(user_id=uid)
+    ucart = CarInfo.objects.filter(user_id=uid,isplace=1)
     user = UserInfo.objects.filter(id=uid)[0]
     context = {'title': '提交订单', 'position_name': '提交订单','ucart':ucart,'user':user}
     return render(req, 'place_order.html', context)
+
 
 
 def caradd(req):
@@ -51,9 +52,17 @@ def caradd(req):
 
 def carchange(req):
     try:
-        get = req.GET.get('infos')
+        get = req.POST.get('infos')
         uid = req.session.get('uid','0')
         info = eval(get)  # 字符串转对象
+        cart = CarInfo.objects.filter(user_id=uid)
+        # 把所有的商品清除订单
+        for good_car in cart:
+            if good_car.isplace == 1:
+                good_car.isplace = False
+                good_car.save()
+
+        # 把结算的商品加在订单中
         for item in info:
             gid = item['id']
             cont = item['cont']
@@ -61,6 +70,7 @@ def carchange(req):
             if len(carts)==1:  # 买过了
                 carinfo = carts[0]
                 carinfo.cont = cont
+                carinfo.isplace = 1
                 carinfo.save()
         return JsonResponse({'ischange': 1})
     except:
