@@ -26,7 +26,7 @@
 								{%for gorder in order.orderdetail_set.all%}
 								<ul class="order_goods_list clearfix">					
 									<li class="col01"><img src="/static/{{gorder.goods.gimg}}"></li>
-									<li class="col02">{{gorder.goods.gname|truncatechars:15}}<em>{{gorder.pric}}元/{{gorder.goods.gmete}}</em></li>
+									<li class="col02">{{gorder.goods.gname|truncatechars:15}}<em><span id="pric">{{gorder.pric}}</span>元/{{gorder.goods.gmete}}</em></li>
 									<li class="col03">{{gorder.cont}}</li>
 									<li class="col04">11.80元</li>	
 								</ul>
@@ -43,8 +43,6 @@
 					</tbody>
 				</table>
 				{%endfor%}
-
-
 				<div class="pagenation">
 					{%if orders.has_previous%}
 					<a href="/user/order/?page={{orders.number|add:-1}}"><上一页</a>
@@ -62,6 +60,12 @@
 				</div>
 		</div>
 	</div>
-
-
+	<script>
+		$(function () {
+			$('.order_goods_list').each(function () {
+			    var pric = $(this).find('#pric').text()*$(this).find('.col03').text()
+				$(this).find('.col04').html(pric+'元')
+            })
+        })
+	</script>
 	{%endblock body%}
